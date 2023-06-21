@@ -41,7 +41,9 @@ function Login() {
                 theme: "light",
                 });
             setCustomer(res.data.user)
-            Cookies.set('userToken', res.data.usertoken, { expires:7000 })
+            localStorage.setItem("user", res.data.usertoken);
+
+            // Cookies.set('userToken', res.data.usertoken, { expires:700000 })
             navigate("/shopdashboard")
                 }) 
                 

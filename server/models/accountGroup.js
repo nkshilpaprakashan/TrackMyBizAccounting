@@ -4,7 +4,7 @@ mongoose.set('strictQuery', false);
 
 const accountGroupSchema=new mongoose.Schema({
     group_id:{
-        type:Int32Array,
+        type:Number,
         
     },
     group_type:{

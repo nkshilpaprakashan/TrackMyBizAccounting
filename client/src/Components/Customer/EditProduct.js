@@ -1,20 +1,64 @@
 import React , {useState, useEffect, useRef} from 'react'
-import { NavLink , useNavigate } from 'react-router-dom'
+import { NavLink , useNavigate, useParams } from 'react-router-dom'
 import SuperAdminNavbar from '../SuperAdmin/SuperAdminNavbar'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios'
 
 function EditProduct() {
+
+  const {id}=useParams();
+  console.log("id")
+  console.log(id)
 
   const navigate = useNavigate();
   const marginamt=useRef()
   const exclprice=useRef()  
   const inclprice=useRef()
 
- 
+
+
+const [product,setProduct]=useState('')
+
+
+        const fetchproduct = async () => {
+   const res = await fetch(`http://localhost:8000/editmainproduct/${id}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+    
+            const productdata = await res.json()
+           
+            if (res.status === 422 || !productdata) {
+                console.log("error ");
+    
+            } else {
+    
+                setProduct(productdata)
+                setInpProduct(productdata)
+                console.log("setProduct")
+                console.log(setProduct)
+                
+                console.log("got productssss data");
+                console.log(productdata)
+    
+            }
+        
+        }
+
+        useEffect(() => {
+           
+            fetchproduct();
+           
+           
+        }, [id])
+       
+  
   
   const [inpProduct, setInpProduct] = useState({
-      product_name:"",
+      product_name:product.product_name,
       product_code: "",
       category: "",
       description: "",
@@ -31,12 +75,6 @@ function EditProduct() {
 
   })
 
-
-//   useEffect(() => {
-//     const mamt=parseInt(inpProduct.landing_cost) * parseInt(inpProduct.margin_per)/100;
-//     inpProduct.margin_amt=mamt
-   
-//   },[inpProduct])
 
 
   useEffect(() => {
@@ -72,7 +110,7 @@ const setdata = (e)=> {
 
 
 
-const addinpdata = async (e) => {
+const updateinpdata = async (e) => {
   e.preventDefault();
 
   const { 
@@ -93,8 +131,8 @@ const addinpdata = async (e) => {
 
 console.log(e)
 
-  const res = await fetch("http://localhost:8000/editproduct/64199a2dfb45c030c5e5bec6", {
-      method: "POST",
+  const res = await fetch(`http://localhost:8000/saveeditmainproduct/${id}`, {
+      method: "PATCH",
       headers: {
           "Content-Type": "application/json"
       },
@@ -146,7 +184,7 @@ console.log(e)
         theme: "dark",
         });
 
-      console.log("product added");
+      console.log("product edited");
       
       
 
@@ -163,10 +201,10 @@ console.log(e)
                         <div className="rounded-t bg-white mb-0 px-6 py-6">
                             <div className="text-center flex justify-between">
                                 <h6 className="text-blueGray-700 text-xl font-bold">
-                                    Edit Products
+                                    Edit Product
                                 </h6>
-                                <button onClick={addinpdata} className="bg-pink-500 text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150" type="button">
-                                    Save
+                                <button onClick={updateinpdata} className="bg-pink-500 text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150" type="button">
+                                    Update
                                 </button>
                             </div>
                         </div>
@@ -350,3 +388,4 @@ console.log(e)
 }
 
 export default EditProduct
+

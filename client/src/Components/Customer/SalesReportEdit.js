@@ -4,13 +4,16 @@ import {SiAddthis} from 'react-icons/si'
 import {BsTrash} from 'react-icons/bs'
 import {FiEdit} from 'react-icons/fi'
 import {BiEditAlt} from 'react-icons/bi'
-import { NavLink , useNavigate } from 'react-router-dom'
+import { NavLink , useNavigate, useParams} from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CircleLoader from "react-spinners/CircleLoader";
 
 
-function PurchaseInvoice() {
+function SalesReportEdit() {
+    const {id}=useParams();
+    console.log("id")
+    console.log(id)
 
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -42,9 +45,9 @@ function PurchaseInvoice() {
     const [show, setShow] = useState(false)
     const [editIndex, setEditIndex] = useState()
 
-    const [vendorId, setVendorId] = useState(0)
-    const [vendorDetails, setVendorDetails] = useState([])
-const [vendoraddress,setvendoraddress]=useState('')
+    const [customerId, setCustomerId] = useState(0)
+    const [customerDetails, setCustomerDetails] = useState([])
+const [customeraddress,setcustomeraddress]=useState('')
     const [productId, setProductId] = useState('')
     const [productDetails, setProductDetails] = useState([])
 
@@ -67,17 +70,17 @@ const [vendoraddress,setvendoraddress]=useState('')
         
         
        
-       console.log("vendorId")
-       console.log(vendorId)
+       console.log("customerId")
+       console.log(customerId)
        setProductId(e.target.value)
     }
 
   
 
-     function handlevendorchange(e) {
+     function handlecustomerchange(e) {
        
         
-       setVendorId(e.target.value)
+       setCustomerId(e.target.value)
     
         
     }
@@ -195,7 +198,7 @@ const [vendoraddress,setvendoraddress]=useState('')
 
     const data = async () => {
 
-        const res = await fetch("http://localhost:8000/purchaseproduct", {
+        const res = await fetch("http://localhost:8000/salesproduct", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -219,8 +222,8 @@ const [vendoraddress,setvendoraddress]=useState('')
     // whenever the page reload it calls getdata
     useEffect(() => {
         data();
-        vendordatas();
-        getinvoiceno()
+        customerdatas();
+        
     }, [])
 
 
@@ -240,7 +243,7 @@ const [vendoraddress,setvendoraddress]=useState('')
 
     const data1 = async () => {
 
-        const res = await fetch(`http://localhost:8000/getpurchaseproductdetails/${productId}`, {
+        const res = await fetch(`http://localhost:8000/getsalesproductdetails/${productId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -277,97 +280,71 @@ const [vendoraddress,setvendoraddress]=useState('')
 
     }, [inputList.product_name])
 
-    const [vendordata, setVendordata] = useState([]);
-    const vendordatas = async () => {
+    const [customerdata, setCustomerdata] = useState([]);
+    const customerdatas = async () => {
 
-        const res = await fetch("http://localhost:8000/purchasevendor", {
+        const res = await fetch("http://localhost:8000/salescustomer", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
             }
         })
 
-        const getvendordata = await res.json()
-        console.log(getvendordata)
+        const getcustomerdata = await res.json()
+        console.log(getcustomerdata)
 
-        if (res.status === 422 || ! getvendordata) {
+        if (res.status === 422 || ! getcustomerdata) {
             console.log("error ");
 
         } else {
-            setVendordata(getvendordata)
-            console.log("got total vendor data ");
+            setCustomerdata(getcustomerdata)
+            console.log("got total customers data ");
 
 
         }
     }
 
 
-      const vendordata1 = async () => {
+      const customerdata1 = async () => {
 
-        const res = await fetch(`http://localhost:8000/getpurchasevendordetails/${vendorId}`, {
+        const res = await fetch(`http://localhost:8000/getsalescustomerdetails/${customerId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
             }
         })
 
-        const vendordatadetailed = await res.json()
+        const customerdatadetailed = await res.json()
         console.log("---------------")
-        console.log(vendordatadetailed)
+        console.log(customerdatadetailed)
 
 
-        if (res.status === 422 || !vendordatadetailed) {
+        if (res.status === 422 || !customerdatadetailed) {
             console.log("error ");
 
         } else {
 
-            setVendorDetails(vendordatadetailed)
-            console.log("got vendor data");
-            console.log(vendordatadetailed.vendor_address)
+            setCustomerDetails(customerdatadetailed)
+            console.log("got customer data");
+            console.log(customerdatadetailed)
+            console.log(customerdatadetailed.customer_address)
 
         }
     }
 
     useEffect(() => {
-        vendordata1()
-        setvendoraddress(vendorDetails.vendor_address)
-    }, [vendorId])
+        customerdata1()
+        setcustomeraddress(customerDetails.customer_address)
+    }, [customerId])
 
 
 
-    const [newInvoiceNo, setNewInvoiceNo] = useState(0)
-    //get billno
-    const getinvoiceno = async () => {
-
-        const res = await fetch("http://localhost:8000/getinvoiceno", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-
-        const invoicenumber = await res.json()
-        console.log("-----invoiceno----------")
-        console.log(invoicenumber)
-
-
-        if (res.status === 422 || !invoicenumber) {
-            console.log("error ");
-
-        } else {
-
-            setNewInvoiceNo(invoicenumber)
-            console.log("got invoice number");
-            
-
-        }
-    }
-
-
-    const setpurchase = (e)=> {
+    
+    
+    const setsales = (e)=> {
         console.log(e.target.value);
         const { name, value } = e.target;
-        setpurchaseData((preval) => {
+        setsalesData((preval) => {
          return {
              ...preval,
              [name]: value
@@ -375,11 +352,12 @@ const [vendoraddress,setvendoraddress]=useState('')
        })
        }
 
-    const [purchaseData, setpurchaseData] = useState({
-        purchaseno:newInvoiceNo,
-        purchase_date:"",
+    const [salesData, setsalesData] = useState({
+        billno:newBillNo,
+        bill_date:"",
         paymode:"",
-        vendor_id:0,
+        customer_id:0,
+        customer_name:"",
         total_gst:0,
         gross_amount:0,
         netamount:0
@@ -388,38 +366,106 @@ const [vendoraddress,setvendoraddress]=useState('')
     })
 
 
-    
 
-    // Passing Purchase Parameters to PurchaseController
-    const savepurchase = async (e) => {
+    const [sales,setSales]=useState([{}])
+    const [date, setDate]=useState(0)
+// 
+const [newBillNo, setNewBillNo] = useState(0)
+    const fetchsales = async () => {
+const res = await fetch(`http://localhost:8000/editmainsales/${id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+
+        const salesdata = await res.json()
+       
+        if (res.status === 422 || !salesdata) {
+            console.log("error ");
+
+        } else {
+            setNewBillNo(salesdata[0].billno)
+            setDate(salesdata[0].bill_date)
+            setsalesData({
+                paymode:salesdata[0].paymode,
+                
+            })
+            setTotNetAmount(salesdata[0].netamount)
+            setTotGstAmount(salesdata[0].total_gst)
+            setSubTotal(salesdata[0].gross_amount)
+            setCustomerId(salesdata[0].customer_id)
+            // setCustomerdata(salesdata[0].customer_name)
+            // setcustomeraddress(salesdata[0].customer_address)
+            console.log("grid item count")
+           console.log(salesdata[0].products_info.length)
+            for(let i=0;i<salesdata[0].products_info.length;i++){
+                console.log(i)
+            setProducts([
+                ...products, {
+                    productId:salesdata[0].products_info[i].productId,
+                    product_name:salesdata[0].products_info[i].product_name,
+                    product_code:salesdata[0].products_info[i].product_code,
+                    qty:1,
+                    unitname:'Nos',
+                    gst_per:10,
+                    price_excl:1000,
+                    price_incl:1000,
+                    amount:1000,
+                    gst_amount:100,
+                    net_amount:1100,
+                    discount:0,
+                    subtotal:1000
+                }
+            ])}
+            console.log("salesdata")
+            console.log(salesdata)
+            
+            console.log("got customers data");
+            console.log(customerdata)
+
+        }
+    
+    }
+
+    useEffect(() => {
+       
+        fetchsales();
+       
+       
+    }, [id])
+
+
+    // Passing Sales Parameters to SalesController
+    const saveeditsales = async (e) => {
         e.preventDefault();
       
         const { 
-            purchaseno,
-            purchase_date,
+            billno,
+            bill_date,
             paymode,
-            vendor_id,
+            customer_id,
+            customer_name,
             total_gst,
             gross_amount,
             netamount,
             products_info
            
-           
-
-      } = purchaseData ;
+      } = salesData ;
 
       console.log(`product details ${products}`)
       
-        const res = await fetch("http://localhost:8000/savepurchase", {
+        const res = await fetch("http://localhost:8000/savesales", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-            purchaseno:newInvoiceNo,
-            purchase_date:date,
+            billno:newBillNo,
+            bill_date:date,
             paymode,
-            vendor_id:vendorId,
+            customer_id:customerId,
+            customer_name:customerDetails.customer_name,
             total_gst:totgstamount,
             gross_amount:subtotal,
             netamount:totnetamount,
@@ -431,7 +477,7 @@ const [vendoraddress,setvendoraddress]=useState('')
       
         const data = await res.json();
         console.log(data);
-        navigate("/purchase")
+        navigate("/salesreport")
       
         if (res.status === 422 || !data) {
             console.log(data);
@@ -450,7 +496,7 @@ const [vendoraddress,setvendoraddress]=useState('')
       
         } else {
             
-            navigate("/purchase")
+            navigate("/sales")
             setInputList({
               product_name: "",
               product_code: "",
@@ -461,7 +507,7 @@ const [vendoraddress,setvendoraddress]=useState('')
               price_incl: 0,
               discount: 0
           })
-            toast.success("Purchase added successfully", {
+            toast.success("Sales added successfully", {
               position: "top-right",
               autoClose: 3000,
               hideProgressBar: true,
@@ -471,13 +517,13 @@ const [vendoraddress,setvendoraddress]=useState('')
               progress: undefined,
               theme: "dark",
               });
-            console.log("Purchase added "+{...inputList});
+            console.log("Sales added "+{...inputList});
             
             window.location.reload();
       
         }
       }
-let date = new Date()
+// let date = new Date()
 
     return (
         <div className='flex'>
@@ -494,7 +540,7 @@ let date = new Date()
                 <div className="border-t-8 border-gray-700 h-2"></div>
                 <div className="container mx-auto py-6 px-4">
                     <div className="flex justify-between">
-                        <h2 className="text-2xl font-bold mb-6 pb-2 tracking-wider uppercase">Purchase Invoice</h2>
+                        <h2 className="text-2xl font-bold mb-6 pb-2 tracking-wider uppercase">Sales Invoice</h2>
                         <div>
                             <div className="relative mr-4 inline-block">
                                 <div className="text-gray-500 cursor-pointer w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-300 inline-flex items-center justify-center">
@@ -528,16 +574,16 @@ let date = new Date()
                                 <label className="w-32 text-gray-800 block font-bold text-sm uppercase tracking-wide">Invoice No.</label>
                                 <span className="mr-4 inline-block hidden md:block">:</span>
                                 <div className="flex-1">
-                                    <input name="purchaseno" value={newInvoiceNo} onChange={setpurchase} className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-48 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500" id="inline-full-name" type="text" placeholder="eg. #INV-100001" x-model="invoiceNumber"/>
+                                    <input name="billno" value={newBillNo} onChange={setsales} className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-48 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500" id="inline-full-name" type="text" placeholder="eg. #INV-100001" x-model="invoiceNumber"/>
                                 </div>
                             </div>
                             <div className="mb-2 md:mb-1 md:flex items-center">
                                 <label className="w-32 text-gray-800 block font-bold text-sm uppercase tracking-wide">Invoice Date</label>
                                 <span className="mr-4 inline-block hidden md:block">:</span>
                                 <div className="flex-1">
-                                    <input name="invoice_date"
-                                     value={`${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`} 
-                                     onChange={setpurchase} 
+                                    <input name="bill_date"
+                                     value={date} 
+                                     onChange={setsales} 
                                      className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-48 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 js-datepicker"
                                       type="text" id="datepicker1" 
                                     //   placeholder="eg. 17 Feb, 2020" 
@@ -550,7 +596,7 @@ let date = new Date()
                                 </label>
                                 <span className="mr-4 inline-block hidden md:block">:</span>
                                 <div className="flex-1">
-                                    <select name="paymode" onChange={setpurchase} value={purchaseData.paymode} className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-48 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 js-datepicker-2" id="datepicker2" type="text" placeholder="cash/credit" x-model="Paymode" autocomplete="off" readonly>
+                                    <select name="paymode" onChange={setsales} value={salesData.paymode} className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-48 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 js-datepicker-2" id="datepicker2" type="text" placeholder="cash/credit" x-model="Paymode" autocomplete="off" readonly>
                                     <option value="" disable selected hidden>-SELECT PAYMODE-</option>
                                      <option value="Cash">Cash</option>
                                      <option value="Credit">Credit</option>
@@ -561,19 +607,19 @@ let date = new Date()
                         </div>
                         <div className="w-full md:w-1/3">
                             <label className="text-gray-800 block mb-1 font-bold text-sm uppercase tracking-wide">Bill/Ship To:</label>
-                            <select name="vendor_name"  onChange={handlevendorchange} className="mb-1 bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500" id="inline-full-name" type="text"  >
+                            <select name="customer_name"  onChange={handlecustomerchange} className="mb-1 bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500" id="inline-full-name" type="text"  >
                            
-                                <option value="" disable selected hidden>--Select Vendor Name--</option>
+                                <option value="" disable selected hidden>--Select Customer Name--</option>
                                 {
-                                vendordata.map(vendor => (
+                                customerdata.map(customer => (
                                     <option key={
-                                        vendor._id
+                                        customer._id
                                         }
                                         value={
-                                            vendor._id
+                                            customer._id
                                     }>
                                         {
-                                        vendor.vendor_name
+                                        customer.customer_name
                                     }</option>
                                 ))
                             } 
@@ -585,9 +631,9 @@ let date = new Date()
                             onChange={handleinputchange}
                             /> */}
 
-<input type="text" name="vendor_address" placeholder='Vendor Address' className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+<input type="text" name="customer_address" placeholder='Customer Address' className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                                 value={
-                                    vendoraddress
+                                    customeraddress
                                 }
                                />
                             <input className="mb-1 bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500" id="inline-full-name" type="text" placeholder="Additional info" x-model="billing.extra"/>
@@ -793,7 +839,7 @@ let date = new Date()
                         </div>
                     </div>
 
-                    <button onClick={savepurchase} className="bg-pink-500 text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150" type="button">
+                    <button onClick={saveeditsales} className="bg-pink-500 text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150" type="button">
                                     Save
                                 </button>
                 </div>
@@ -807,4 +853,4 @@ let date = new Date()
 }
 
 
-export default PurchaseInvoice
+export default SalesReportEdit

@@ -62,7 +62,12 @@ const productMaster=new mongoose.Schema({
     },
     opening_stock:{
         type:Number,
+        default:0
        
+    },
+    curr_stock:{
+        type:Number,
+        default:0
     },
   
    

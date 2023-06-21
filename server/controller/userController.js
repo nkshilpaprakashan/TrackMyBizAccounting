@@ -3,8 +3,10 @@ const productMaster = require('../models/productMaster')
 const customerMaster = require('../models/customerMaster')
 const vendorMaster = require('../models/vendorMaster')
 const ledgers= require('../models/ledger')
-const objectId = require('mongodb').ObjectId
+const ObjectId = require('mongodb').ObjectId
 const jwt = require('jsonwebtoken')
+const salesMaster = require('../models/salesMaster')
+const purchaseMaster = require('../models/purchaseMaster')
 
 
 async function insertdefaultledgers(user_id){
@@ -45,7 +47,7 @@ async function userRegister(req, res) {
     try {
 
         const preuser = await userCollection.findOne({email: email});
-        console.log(preuser);
+        
 
         if (preuser) {
             res.status(422).json("This User is already present");
@@ -68,7 +70,7 @@ async function userRegister(req, res) {
             insertdefaultledgers(userdata._id);
             
             res.status(201).json(adduser);
-            console.log(adduser);
+            
         }
 
     } catch (error) {
@@ -89,7 +91,7 @@ try {
         if(password === user.password){
             let userdata=user.toObject()
           
-            const usertoken = jwt.sign(userdata, 'MySecretKeyUser', {expiresIn: '1h'}) 
+            const usertoken = jwt.sign(userdata, 'MySecretKeyUser', {expiresIn: '1d'}) 
             global.clientId=userdata._id
             res.send({ message: "Login Successfull", user, usertoken })
         }else{
@@ -153,8 +155,7 @@ async function addProduct(req, res) {
     try {
         
         const preproduct = await productMaster.findOne({$and:[{product_code: product_code},{user_id:global.clientId}]});
-        console.log("preproduct")
-        console.log(preproduct);
+        
 
         if (preproduct) {
             res.status(422).json("This Product Code already exist");
@@ -181,7 +182,7 @@ async function addProduct(req, res) {
           
             
             res.status(201).json(addproduct);
-            console.log(addproduct);
+           
         }
 
     } catch (error) {
@@ -195,7 +196,7 @@ async function viewProduct(req,res){
     try {
         const productdata = await productMaster.find({user_id:global.clientId});
         res.status(201).json(productdata)
-        console.log(productdata);
+        
     } catch (error) {
         res.status(422).json(error);
     }
@@ -233,10 +234,8 @@ async function addCustomer(req, res) {
   
       try {
           
-          const precustomer = await customerMaster.findOne({$and:[{cust_phone: cust_phone},{user_id:global.clientId}]});
-          console.log("precustomer")
-          console.log(precustomer);
-          console.log(global.clientId)
+          const precustomer = await customerMaster.findOne({cust_phone: cust_phone,user_id:global.clientId});
+          
   
           if (precustomer) {
               res.status(422).json("This Customer Code already exist");
@@ -273,8 +272,7 @@ async function addCustomer(req, res) {
             
               
               res.status(201).json(addcustomer);
-              console.log("addedcustomer");
-              console.log(addcustomer);
+              
           }
   
       } catch (error) {
@@ -283,11 +281,12 @@ async function addCustomer(req, res) {
   }
 
   //get customer
-async function viewCustomer(req,res){
+  async function viewCustomer(req,res){
     try {
         const customerdata = await customerMaster.find({user_id:global.clientId});
-        res.status(201).json(customerdata)
-        console.log(customerdata);
+
+res.status(201).json(customerdata)
+        
     } catch (error) {
         res.status(422).json(error);
     }
@@ -326,9 +325,7 @@ async function addVendor(req, res) {
       try {
           
           const prevendor = await vendorMaster.findOne({$and:[{vendor_phone: vendor_phone},{user_id:global.clientId}]});
-          console.log("prevendor")
-          console.log(prevendor);
-          console.log(global.clientId)
+          
   
           if (prevendor) {
               res.status(422).json("This Vendor Code already exist");
@@ -365,8 +362,7 @@ async function addVendor(req, res) {
             
               
               res.status(201).json(addvendor);
-              console.log("addedvendor");
-              console.log(addvendor);
+              
           }
   
       } catch (error) {
@@ -379,48 +375,185 @@ async function addVendor(req, res) {
     try {
         const vendordata = await vendorMaster.find({user_id:global.clientId});
         res.status(201).json(vendordata)
-        console.log(vendordata);
+        
     } catch (error) {
         res.status(422).json(error);
     }
 }
 
-   //get salesproduct
-   async function salesProduct(req,res){
+async function editMainProduct(req,res){
     try {
-        const productdata = await productMaster.find({user_id:global.clientId});
-        res.status(201).json(productdata)
-        console.log(productdata);
-    } catch (error) {
-        res.status(422).json(error);
-    }
-}
-
- //get Edit Product 
-async function editProduct(req,res){
-    try {
+        
        const productId= req.params.id
         const productdata = await productMaster.findOne({$and:[{_id: productId},{user_id:global.clientId}]});
         res.status(201).json(productdata)
-        console.log(productdata);
+        
+      
     } catch (error) {
         res.status(422).json(error);
     }
 }
 
+//update product
+async function saveEditMainProduct(req,res){
+try {
+    const productId= req.params.id
+    
+    const updatedproductdata = await productMaster.findByIdAndUpdate({_id: productId,user_id:global.clientId},req.body,{new:true})
+   
+    if (!updatedproductdata) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.status(201).json(updatedproductdata)
+  } catch (error) {
+    console.log("error");
+    res.status(422).json(error);
+  }
+}
 
- //get getDetails
- async function getProductDetails(req,res){
+
+async function deleteMainProduct(req, res) {
+    try{
+    const productId= req.params.id
+
+  
+    const salesdata = await salesMaster.find({
+        $and: [
+          { 'products_info.productId': ObjectId(productId) },
+          { client_id:  ObjectId(global.clientId) }
+        ]
+      });
+   
+    if(salesdata.length>0){
+    
+    res.status(422).json("Cannot Delete!!!Transaction exist on this product");
+    
+   }else{
+    const deleteproduct= await productMaster.findByIdAndDelete({ _id: productId, user_id: global.clientId });
+
+   res.status(201).json(deleteproduct)
+   }
+    }catch (error) {
+    console.log("error");
+    res.status(404).json(error);
+  }
+}
+
+async function editMainCustomer(req,res){
     try {
-       const productId= req.params.id
-        const productdata = await productMaster.findOne({$and:[{_id: productId},{user_id:global.clientId}]});
-        res.status(201).json(productdata)
-        console.log(productdata);
+        
+       const customerId= req.params.id
+       const customerdata = await customerMaster.findOne({$and:[{_id: customerId},{user_id:global.clientId}]});
+        res.status(201).json(customerdata)
+        
+        
     } catch (error) {
         res.status(422).json(error);
     }
 }
 
+//update Customer
+async function saveEditMainCustomer(req,res){
+    try {
+        const customerId= req.params.id
+        
+        const updatedcustomerdata = await customerMaster.findByIdAndUpdate({_id: customerId,user_id:global.clientId},req.body,{new:true})
+       
+        if (!updatedcustomerdata) {
+          return res.status(404).json({ message: "Customer not found" });
+        }
+        res.status(201).json(updatedcustomerdata)
+      } catch (error) {
+        console.log("error");
+        res.status(422).json(error);
+      }
+    }
+
+
+    async function deleteMainCustomer(req, res) {
+        try{
+        const customerId= req.params.id
+    
+      
+        const customerdata = await salesMaster.find({
+            $and: [
+              { customer_id: customerId},
+              { client_id:  ObjectId(global.clientId) }
+            ]
+          });
+       
+        if(customerdata.length>0){
+        
+        res.status(422).json("Cannot Delete!!!Transaction exist on this customer");
+        
+       }else{
+        const deletecustomer= await customerMaster.findByIdAndDelete({ _id: customerId, user_id: global.clientId });
+    
+       res.status(201).json(deletecustomer)
+       }
+        }catch (error) {
+        console.log("error");
+        res.status(404).json(error);
+      }
+    }
+
+    async function editMainVendor(req,res){
+        try {
+            
+           const vendorId= req.params.id
+            const vendordata = await vendorMaster.findOne({_id: vendorId,user_id:global.clientId});
+            res.status(201).json(vendordata)
+            
+           
+        } catch (error) {
+            res.status(422).json(error);
+        }
+    }
+
+//update Vendor
+async function saveEditMainVendor(req,res){
+    try {
+        const vendorId= req.params.id
+        
+        const updatedvendordata = await vendorMaster.findByIdAndUpdate({_id: vendorId,user_id:global.clientId},req.body,{new:true})
+       
+        if (!updatedvendordata) {
+          return res.status(404).json({ message: "Vendor not found" });
+        }
+        res.status(201).json(updatedvendordata)
+      } catch (error) {
+        console.log("error");
+        res.status(422).json(error);
+      }
+    }
+
+
+    async function deleteMainVendor(req, res) {
+        try{
+        const vendorId= req.params.id
+    
+      
+        const vendordata = await purchaseMaster.find({
+            $and: [
+              { vendor_id: vendorId},
+              { client_id:  ObjectId(global.clientId) }
+            ]
+          });
+        
+        if(vendordata.length>0){
+        
+        res.status(422).json("Cannot Delete!!!Transaction exist on this vendor");
+        
+       }else{
+        const deletevendor= await vendorMaster.findByIdAndDelete({ _id: vendorId, user_id: global.clientId });
+    
+       res.status(201).json(deletevendor)
+       }
+        }catch (error) {
+        console.log("error");
+        res.status(404).json(error);
+      }
+    }
 
 
 
@@ -431,12 +564,20 @@ module.exports = {
     userLogin,
     userDashboard,
     addProduct,
+    editMainProduct,
     addCustomer,
     viewProduct,
     viewCustomer,
     addVendor,
     viewVendor,
-    salesProduct,
-    getProductDetails,
-    editProduct
+    saveEditMainProduct,
+    deleteMainProduct,
+    editMainCustomer,
+    saveEditMainCustomer,
+    deleteMainCustomer,
+    editMainVendor,
+    saveEditMainVendor,
+    deleteMainVendor
+    
+   
 }

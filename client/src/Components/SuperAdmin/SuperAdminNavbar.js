@@ -30,7 +30,7 @@ function SuperAdminNavbar() {
             <>
             <li>
             <span><RiDashboardFill className={`last:text-[#cfb2c9] text-2xl block float-left cursor-pointer mr-4  ml-[-40px] ${!open ? "text-3xl && ml-[-45px]" : "text-2xl"}`}/></span>
-          <span className={`text-[#cfb2c9] text-lg ${!open && "hidden"}`}>Dashboard</span>
+          <span> <NavLink to="/shopdashboard" className={`text-[#cfb2c9] text-lg ${!open && "hidden"}`}>Dashboard</NavLink></span>
           </li>
           <li>
             <span><GrProductHunt className={`last:text-[#cfb2c9] text-2xl block float-left cursor-pointer mr-4  ml-[-40px] ${!open ? "text-3xl && ml-[-45px]" : "text-2xl"}`}/></span>
@@ -42,7 +42,7 @@ function SuperAdminNavbar() {
           </li>
           <li>
             <span><IoLogoVimeo className={`last:text-[#cfb2c9] text-2xl block float-left cursor-pointer mr-4  ml-[-40px] ${!open ? "text-3xl && ml-[-45px]" : "text-2xl"}`}/></span>
-            <span><NavLink to="/customerview"className={`text-[#cfb2c9] text-lg ${!open && "hidden"}`}>Vendors</NavLink></span>
+            <span><NavLink to="/vendorview" className={`text-[#cfb2c9] text-lg ${!open && "hidden"}`}>Vendors</NavLink></span>
           </li>
           <li>
             <span><BiTransfer className={`last:text-[#cfb2c9] text-2xl block float-left cursor-pointer mr-4  ml-[-40px] ${!open ? "text-3xl && ml-[-45px]" : "text-2xl"}`}/></span>

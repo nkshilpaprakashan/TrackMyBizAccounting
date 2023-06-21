@@ -5,6 +5,7 @@ const app=express()
 const mongoose=require('mongoose')
 const cookieParser = require('cookie-parser')
 
+const dotenv = require("dotenv");
 
 // const userCollection=require('./models/userSchema')
 const adminRoutes=require('./routes/adminRouter')
@@ -14,18 +15,20 @@ const myAdminRoutes=require('./routes/myAdminRouter')
 const mongodb=require('./config/db')
 mongodb()//involked the imported function fron mongooseConnection.
 
-
-
+dotenv.config();
+const PORT = process.env.PORT || 8000;
 
 
 const cors=require('cors')//setup for CORS
 app.use(
     cors({
-        origin:["http://localhost:3000"],
-        method:["GET","POST"],
+        origin:[process.env.CORS],
+        method:["GET","POST","PUT","PATCH","DELETE"],
         credentials:true,
     })
 )
+
+
 
 const path=require('path')
 

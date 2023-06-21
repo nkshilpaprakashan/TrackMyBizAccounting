@@ -5,7 +5,7 @@ mongoose.set('strictQuery', false);
 
 const ledger=new mongoose.Schema({
     ledger_id:{
-        type:String,
+        type:Number,
         
     },
     ledger_name:{
@@ -13,7 +13,7 @@ const ledger=new mongoose.Schema({
        
     },
     group_id:{
-        type:String,  
+        type:Number,  
     },
     opndebit:{
         type:Number,  

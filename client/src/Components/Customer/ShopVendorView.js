@@ -1,15 +1,56 @@
 import React, {useState, useEffect} from 'react'
 import DataTable from 'react-data-table-component';
-
-import {NavLink} from 'react-router-dom'
+import Swal from 'sweetalert2';
+import {NavLink, useNavigate} from 'react-router-dom'
 import {AiFillEdit} from 'react-icons/ai'
 import {AiFillDelete} from 'react-icons/ai'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from '../../Axios/axiosInstance'
 
 import SuperAdminNavbar from '../SuperAdmin/SuperAdminNavbar'
 
 function ShopVendorView() {
+    const navigate = useNavigate();
+    const deletevendor =async(vendorId) =>{
+        try {
+            const confirmResult = await Swal.fire({
+              title: 'Are you sure?',
+              text: 'You are about to Delete the Customer. This action cannot be undone.',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#d33',
+              cancelButtonColor: '#3085d6',
+              confirmButtonText: 'OK',
+              cancelButtonText: 'Cancel',
+            });
+        
+            if (confirmResult.isConfirmed) {
+             const res = await fetch(`http://localhost:8000/deletemainvendor/${vendorId}`, {
+             method: "DELETE",
+              headers: {
+                 "Content-Type": "application/json"
+                      }
+    })
 
-   
+    const deletedata= await res.json()
+    console.log(deletedata)
+    if(res.status ===422 || !deletedata){
+        console.log("error")
+        toast(deletedata)
+    }else{
+        toast("Vendor deleted Successfully")
+
+        data()
+        navigate("/vendorview")
+    }
+
+    }
+}catch (error) {
+    console.log(error);
+    toast.error('Failed to Delete');
+  }
+}  
 const columns = [
     {
     name: 'Vendor Name',
@@ -45,7 +86,18 @@ const columns = [
         selector: row => row.vendor_phone,
         sortable:true
 
-    }
+    },
+    {
+        name: 'Action',
+        selector: row => row._id,
+        cell: row => <NavLink to={`/editmainvendor/${row._id}`} className="btn btn-primary">Edit</NavLink>
+        },
+        {
+            name: 'Action',
+            selector: row => row._id,
+            cell: row => <button onClick={()=>deletevendor(row._id)} className='btn btn-danger'>Delete</button>
+        }
+
    
 ];
 
@@ -57,9 +109,19 @@ const data = async () => {
 const res = await fetch("http://localhost:8000/vendorview", {
    method: "GET",
    headers: {
+    Authorization: `Bearer ${localStorage.getItem("user")}`,
+
        "Content-Type": "application/json"
    }
 })
+// const res = await axios.get('/vendorview','',{
+//     headers: {
+//       Authorization: `Bearer ${localStorage.getItem("user")}`,
+//       "Content-Type": "application/json",
+//     },
+//     // params: { role: 'user' }
+//   });
+console.log(res);
 
 const getdata = await res.json()
 console.log(getdata);

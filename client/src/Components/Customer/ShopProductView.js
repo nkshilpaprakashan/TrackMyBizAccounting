@@ -1,14 +1,15 @@
 import React, {useState, useEffect} from 'react'
 import DataTable from 'react-data-table-component';
-
-import {NavLink} from 'react-router-dom'
+import Swal from 'sweetalert2';
+import { NavLink , useNavigate } from 'react-router-dom'
 import {AiFillEdit} from 'react-icons/ai'
 import {AiFillDelete} from 'react-icons/ai'
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import SuperAdminNavbar from '../SuperAdmin/SuperAdminNavbar'
 
 function ShopProductView() {
-
+    const navigate = useNavigate();
     const[productId, setProductId]=useState('')
     const[productDetails, setProductDetails]=useState([])
 
@@ -34,6 +35,46 @@ function ShopProductView() {
          
         }
         } 
+
+        const deleteproduct =async(productId) =>{
+            try {
+                const confirmResult = await Swal.fire({
+                  title: 'Are you sure?',
+                  text: 'You are about to Delete the product. This action cannot be undone.',
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonColor: '#d33',
+                  cancelButtonColor: '#3085d6',
+                  confirmButtonText: 'OK',
+                  cancelButtonText: 'Cancel',
+                });
+            
+                if (confirmResult.isConfirmed) {
+                 const res = await fetch(`http://localhost:8000/deletemainproduct/${productId}`, {
+                 method: "DELETE",
+                  headers: {
+                     "Content-Type": "application/json"
+                          }
+        })
+
+        const deletedata= await res.json()
+        console.log(deletedata)
+        if(res.status ===422 || !deletedata){
+            console.log("error")
+            toast(deletedata)
+        }else{
+            toast("Product deleted Successfully")
+
+            data()
+            navigate("/productview")
+        }
+
+        }
+    }catch (error) {
+        console.log(error);
+        toast.error('Failed to Delete');
+      }
+    }
     
 const columns = [
     {
@@ -85,13 +126,15 @@ const columns = [
     },
     {
         name: 'Action',
-        cell: row => <NavLink to={`editproduct/${productId._id}`} className="btn btn-primary">Edit</NavLink>
+        selector: row => row._id,
+        cell: row => <NavLink to={`/editmainproduct/${row._id}`} className="btn btn-primary">Edit</NavLink>
         
        
     },
     {
-        
-        cell: row => <button className='btn btn-danger'>Delete</button>
+        name: 'Action',
+        selector: row => row._id,
+        cell: row => <button onClick={()=>deleteproduct(row._id)} className='btn btn-danger'>Delete</button>
     }
 
    

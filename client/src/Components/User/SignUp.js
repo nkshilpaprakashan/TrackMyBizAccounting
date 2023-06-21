@@ -1,5 +1,7 @@
 import React , {useState} from 'react'
 import { NavLink , useNavigate } from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function SignUp() {
     const navigate = useNavigate();
@@ -69,7 +71,7 @@ const addinpdata = async (e) => {
         // history.push("/")
         // setUdata(data)
         navigate("/")
-        alert("data added");
+        toast("data added");
         console.log("data added");
         
         
