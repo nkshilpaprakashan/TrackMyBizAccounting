@@ -81,7 +81,7 @@ console.log(e)
 
   } else {
       
-      navigate("/customerview")
+      navigate("/vendorview")
       toast("vendor added");
       console.log("vendor added");
       

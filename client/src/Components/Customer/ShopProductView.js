@@ -7,6 +7,7 @@ import {AiFillDelete} from 'react-icons/ai'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import SuperAdminNavbar from '../SuperAdmin/SuperAdminNavbar'
+import axios from '../../Axios/axiosInstance'
 
 function ShopProductView() {
     const navigate = useNavigate();
@@ -50,18 +51,21 @@ function ShopProductView() {
                 });
             
                 if (confirmResult.isConfirmed) {
-                 const res = await fetch(`http://localhost:8000/deletemainproduct/${productId}`, {
-                 method: "DELETE",
-                  headers: {
-                     "Content-Type": "application/json"
-                          }
-        })
+               
+        const response = await axios.delete(`/deletemainproduct/${productId}`, {
+            headers: {
+                Authorization: `Bearer ${
+                    localStorage.getItem("user")
+                }`,
+                "Content-Type": "application/json"
+            },
+            
+        });
 
-        const deletedata= await res.json()
-        console.log(deletedata)
-        if(res.status ===422 || !deletedata){
+        
+        if(response.status ===203 ){
             console.log("error")
-            toast(deletedata)
+            toast(response.data.message)
         }else{
             toast("Product deleted Successfully")
 

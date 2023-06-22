@@ -26,8 +26,8 @@ app.use(cors({
 app.use(express.urlencoded({extended: true})) // to get data from post method
 app.use(express.json()) // to recieve the data in json format from the axios call
 
-app.use('/', userRoutes)
-app.use('/', adminRoutes)
-app.use('/', myAdminRoutes)
+app.use('/', userRoutes)  
+// app.use('/', adminRoutes)
+// app.use('/', myAdminRoutes)
 
 app.listen(process.env.PORT || 8000, () => console.log('Server started at port'))

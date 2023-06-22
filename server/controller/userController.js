@@ -542,7 +542,7 @@ async function saveEditMainVendor(req,res){
         
         if(vendordata.length>0){
         
-        res.status(422).json("Cannot Delete!!!Transaction exist on this vendor");
+        res.status(203).json({message:"Cannot Delete!!!Transaction exist on this vendor"});
         
        }else{
         const deletevendor= await vendorMaster.findByIdAndDelete({ _id: vendorId, user_id: global.clientId });

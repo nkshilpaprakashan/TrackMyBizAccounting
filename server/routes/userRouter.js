@@ -59,7 +59,7 @@ router.get('/editmainvendor/:id',userController.editMainVendor)
 
 router.patch('/saveeditmainvendor/:id',userController.saveEditMainVendor)
 
-router.delete('/deletemainvendor/:id',userController.deleteMainVendor)
+router.delete('/deletemainvendor/:id',userVerifyToken,userController.deleteMainVendor)
 
 router.get('/salesproduct',salesController.salesProduct)
 
