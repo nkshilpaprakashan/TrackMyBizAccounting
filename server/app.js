@@ -15,7 +15,7 @@ const cors = require('cors') // setup for CORS
 
 
 app.use(cors({
-    origin: [process.env.FRONTEND],
+    origin: process.env.FRONTEND,
     method: [
         "GET",
         "POST",
@@ -25,6 +25,18 @@ app.use(cors({
     ],
     credentials: true
 }))
+
+// app.use(cors({
+//     origin: "*",
+//     method: [
+//         "GET",
+//         "POST",
+//         "PUT",
+//         "PATCH",
+//         "DELETE"
+//     ],
+//     credentials: true
+// }))
 
 app.use(express.urlencoded({extended: true})) // to get data from post method
 app.use(express.json()) // to recieve the data in json format from the axios call
