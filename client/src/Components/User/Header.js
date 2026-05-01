@@ -14,6 +14,7 @@ function Header() {
 
     const handleToggle = () => {
         setToggle(!toggle);
+        console.log(toggle);
       };
 
     return (
