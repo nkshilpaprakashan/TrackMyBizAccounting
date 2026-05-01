@@ -13,7 +13,7 @@ function Banner() {
     const [paypalModal, setPaypalModal] = useState(false)
     const [amount, setAmount] = useState(1)
     const handlePaymentSuccess = () => {
-        toast.success("Payment done successfully", {
+        toast.success("Payment done Successfully", {
             position: "top-right",
             autoClose: 3000,
             hideProgressBar: true,
@@ -23,10 +23,10 @@ function Banner() {
             progress: undefined,
             theme: "light"
         });
+        console.log("Payment successful");
     }
     return (
         <>
-
             <div>
                 <img className='w-full h-[350px] md:h-[660px]' src="./images/about-img.jpg"/>
             </div>
