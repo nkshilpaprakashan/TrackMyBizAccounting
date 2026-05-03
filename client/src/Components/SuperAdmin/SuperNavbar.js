@@ -15,6 +15,7 @@ function SuperNavbar() {
     { name: 'Clients', link: '/', icon: FaUserAlt },
     { name: 'Plans', link: '/', icon: FaHotel },
   ];
+  console.log("menus");
   const [open, setOpen] = useState(true);
 
   return (
