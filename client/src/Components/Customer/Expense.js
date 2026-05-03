@@ -81,7 +81,7 @@ function Expense() {
         })
 
         const getledgerdata = await res.json()
-        console.log(getledgerdata)
+        console.log("getledgerdata",getledgerdata)
 
         if (res.status === 422 || ! getledgerdata) {
             console.log("error ");
