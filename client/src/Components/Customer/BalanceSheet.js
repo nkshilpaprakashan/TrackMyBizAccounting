@@ -14,6 +14,7 @@ const BalanceSheet = () => {
     })
 
     const getcashdata = await res.json()
+    console.log("getcashdata", getcashdata);
 
     
     const cashinhand = getcashdata[0].total["$numberDecimal"];
