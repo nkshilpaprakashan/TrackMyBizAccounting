@@ -23,7 +23,7 @@ function Banner() {
             progress: undefined,
             theme: "light"
         });
-        console.log("Payment done successfully");
+        console.log("Payment is successfull");
     }
     return (
         <>
