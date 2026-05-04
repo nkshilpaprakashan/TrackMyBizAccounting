@@ -46,7 +46,7 @@ const columns = [
 ];
 
 const [getuserproductdata, setProductdata] = useState([]);
-console.log("Data for getuserproductdata",getuserproductdata);
+console.log("getuserproductdata",getuserproductdata);
 
 const data = async () => {
 
