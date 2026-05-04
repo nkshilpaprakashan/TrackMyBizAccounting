@@ -19,7 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "@octokit/rest": "^20.0.2",
-    "@google/generative-ai": "^0.2.1",
+    "groq-sdk": "^0.3.0",
     "dotenv": "^16.4.5",
     "axios": "^1.6.7"
   }
