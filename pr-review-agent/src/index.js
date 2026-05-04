@@ -11,7 +11,7 @@ const octokit = new Octokit({
 
 // Initialize Google Gemini AI (Free tier available)
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 // Configuration from environment
 const config = {
