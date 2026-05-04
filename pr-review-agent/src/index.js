@@ -1,5 +1,5 @@
 import { Octokit } from '@octokit/rest';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import Groq from 'groq-sdk';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -9,9 +9,10 @@ const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN
 });
 
-// Initialize Google Gemini AI (Free tier available)
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+// Initialize Groq AI (Free with high rate limits!)
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY
+});
 
 // Configuration from environment
 const config = {
@@ -60,7 +61,7 @@ async function getPRFiles() {
 }
 
 /**
- * Analyze code using Google Gemini AI (Free)
+ * Analyze code using Groq AI (Free with high rate limits!)
  */
 async function analyzeCodeWithAI(diff, files) {
   const filesSummary = files.map(f => ({
@@ -79,7 +80,7 @@ Files Changed:
 ${JSON.stringify(filesSummary, null, 2)}
 
 Diff:
-${diff.substring(0, 8000)} ${diff.length > 8000 ? '... (truncated for length)' : ''}
+${diff.substring(0, 6000)} ${diff.length > 6000 ? '... (truncated for length)' : ''}
 
 Please provide:
 1. **Summary**: Brief overview of the changes
@@ -92,9 +93,23 @@ Please provide:
 Format your response in markdown with clear sections.`;
 
   try {
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text();
+    const completion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: 'system',
+          content: 'You are an expert code reviewer with deep knowledge of software engineering best practices, security, and performance optimization.'
+        },
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      model: 'llama-3.3-70b-versatile',
+      temperature: 0.3,
+      max_tokens: 2000
+    });
+
+    return completion.choices[0].message.content;
   } catch (error) {
     console.error('Error analyzing code with AI:', error.message);
     throw error;
@@ -162,5 +177,3 @@ async function main() {
 
 // Run the main function
 main();
-
-// Made with Bob
